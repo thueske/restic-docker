@@ -1,0 +1,53 @@
+version: "3.5"
+
+services:
+  backup:
+    image: mazzolino/restic
+    hostname: docker
+    restart: unless-stopped
+    environment:
+      - TZ
+      - RUN_ON_STARTUP
+      - BACKUP_CRON
+      - RCLONE_CONFIG_BACKUPS_TYPE
+      - RCLONE_CONFIG_BACKUPS_HOST
+      - RCLONE_CONFIG_BACKUPS_USER
+      - RCLONE_CONFIG_BACKUPS_PASS
+      - RESTIC_REPOSITORY
+      - RESTIC_PASSWORD
+      - RESTIC_BACKUP_SOURCES
+      - RESTIC_BACKUP_ARGS
+      - RESTIC_FORGET_ARGS
+      - NOTIFY_URL
+      - PRE_COMMANDS=docker stop $$(docker ps -qa -f 'label=backups=true')
+      - POST_COMMANDS_EXIT=docker start $$(docker ps -qa -f 'label=backups=true')
+      - POST_COMMANDS_SUCCESS=curl --silent --output /dev/null $NOTIFY_URL
+    volumes:
+      - /var/lib/docker/volumes:/mnt/volumes
+      - $HOME:/mnt/home
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      backups: "false"
+    dns:
+      - "1.1.1.1"
+      - "1.0.0.1"
+
+  prune:
+    image: mazzolino/restic
+    hostname: docker
+    restart: unless-stopped
+    environment:
+      - TZ
+      - RUN_ON_STARTUP=false
+      - PRUNE_CRON
+      - RCLONE_CONFIG_BACKUPS_TYPE
+      - RCLONE_CONFIG_BACKUPS_HOST
+      - RCLONE_CONFIG_BACKUPS_USER
+      - RCLONE_CONFIG_BACKUPS_PASS
+      - RESTIC_REPOSITORY
+      - RESTIC_PASSWORD
+    labels:
+      backups: "false"
+    dns:
+      - "1.1.1.1"
+      - "1.0.0.1"
