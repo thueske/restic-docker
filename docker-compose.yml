@@ -16,6 +16,7 @@ services:
     dns:
       - "1.1.1.1"
       - "1.0.0.1"
+    entrypoint: ["/sbin/tini", "--", "/bin/sh", "-c", "unset PRUNE_CRON; /entrypoint"]
 
   prune:
     image: mazzolino/restic
@@ -28,3 +29,4 @@ services:
     dns:
       - "1.1.1.1"
       - "1.0.0.1"
+    entrypoint: ["/sbin/tini", "--", "/bin/sh", "-c", "unset BACKUP_CRON; /entrypoint"]
