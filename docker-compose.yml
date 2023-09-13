@@ -29,4 +29,4 @@ services:
     dns:
       - "1.1.1.1"
       - "1.0.0.1"
-    entrypoint: ["/sbin/tini", "--", "/bin/sh", "-c", "unset BACKUP_CRON; /entrypoint"]
+    entrypoint: ["/sbin/tini", "--", "/bin/sh", "-c", "unset BACKUP_CRON; unset PRE_COMMANDS; unset POST_COMMANDS_EXIT; unset POST_COMMANDS_SUCCESS; /entrypoint"]
